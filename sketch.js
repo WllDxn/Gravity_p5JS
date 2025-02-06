@@ -75,9 +75,6 @@ Planetoid.prototype.drawOrbit = function(){
   let mage = p5.Vector.mag(e)
   let a = -(u*magr)/(magr*Math.pow(magv,2)-2*u)
   let b = a*(Math.sqrt(1-Math.pow(mage,2)))
-  let center = p5.Vector.lerp(this.position, planetoids[0].position, 0.5)
-  let trueanomaly = Math.acos(p5.Vector.dot(e,r)/(mage*magr))
-  let n = u/(Math.pow(a,3))
 
   push()
 
