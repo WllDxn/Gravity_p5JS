@@ -4,10 +4,10 @@ const GRAVITY = 0.1;
 function setup() {
   frameRate(90);
   createCanvas(windowWidth, windowHeight);
-  planetoids.push(new Planetoid(8000, 0, 0, 0, 0, 50, "yellow"));
-  planetoids[0].addSatellite(100, 20, "green", 0, -250, 1);
-  planetoids[0].addSatellite(100, 20, "blue", 200, 0, 0.66);
-  planetoids[0].addSatellite(100, 20, "red", 0, 100, 1.13);
+  planetoids.push(new Planetoid(getRandomInt(5000,20000), 0, 0, 0, 0, 50, "yellow"));
+  planetoids[0].addSatellite(100, 20, "green", 0, getRandomInt(-150,-300), 1);
+  planetoids[0].addSatellite(100, 20, "blue", getRandomInt(150,250), 0, 0.66);
+  planetoids[0].addSatellite(100, 20, "red", 0, getRandomInt(75,200), 1.13);
 }
 
 function draw() {

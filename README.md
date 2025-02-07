@@ -2,6 +2,8 @@
 [Orbital simulator built in p5.js](https://wlldxn.github.io/Gravity_p5JS/)
 ==============
 
+
+
 ## Simulating Gravity
 $F = G\frac{m_1m_2}{r^2}$
 <br><br><br>
@@ -65,6 +67,25 @@ $(P_x,P_y)$ - Primary body coordinates
 
 The orbital ellipse can therefore be drawn around point $(C_x,C_y)$ with length $a$ and width $b$. 
 <br>The rotation of the ellipse is equal to the direction of the eccentricity vector $e$, both with respect to the horizontal axis.
+
+---
+
+## Calculating initial velocity
+
+Initial orbital velocity is calculated by assuming that the eccentricity of an orbit is 0, i.e. that the orbit is circular.
+
+$v = \sqrt{\frac{\mu}{a}}$
+
+$v$ - Orbital velocity
+
+$\mu$ - Standard  gravitation parameter
+
+$a$ - length of semimajor axis (equal to distance between primary body and satellite)
+
+<br>To apply this velocity to the velocity vector of a satelite, find the vector distance between the primary body & satelite, normalize this, then rotate it by a factor of $\frac{\pi}{2}$ and multiply by the Orbital velocity $v$. This ensures that the satellite will travel at a perpendicular direction to the primary body.
+
+<br>Note: the default satellites in the system have altered eccentricities, but any additional satellites created will begin with circular orbits. 
+
 
 ---
 ## Additional points
