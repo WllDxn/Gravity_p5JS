@@ -91,7 +91,7 @@ class Planetoid {
       return;
     }
 
-    const u = GRAVITY * this.parent.mass;
+    const u = GRAVITY *( this.parent.mass + this.mass);
     const v = this.velocity;
     const r = this.position;
     const h = p5.Vector.cross(r, v);
