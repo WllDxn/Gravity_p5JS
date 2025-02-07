@@ -17,10 +17,12 @@ function draw() {
     planetoids[j].applyGravity();
     planetoids[j].update();
     planetoids[j].drawOrbit();
-    planetoids[j].display();
     if (j == 0) {
       planetoids[0].position.sub(planetoids[0].position);
     }
+  }
+  for (let j = 0; j < planetoids.length; j++) {
+    planetoids[j].display();
   }
 }
 
