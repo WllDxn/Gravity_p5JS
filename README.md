@@ -32,11 +32,11 @@ $e$ - Eccentricity vector
 
 
 
-$a  = -\frac{\mu |r|}{|r||v|^2-2\mu} $
+$a  = -\frac{\mu \left|r\right|}{\left|r\right|\left|v\right|^2-2\mu} $
 
-$b = a\sqrt{1-|e|^2}$
+$b = a\sqrt{1-\left|e\right|^2}$
 
-$e=\frac{r\times v}{\mu}-\frac{r}{|r|}$
+$e=\frac{r\times v}{\mu}-\frac{r}{\left|r\right|}$
 
 $\mu = G(m_1+m_2)$
 <br><br><br>
@@ -53,7 +53,7 @@ $m_1$ - Mass of body 1
 $m_2$ - Mass of body 2
 
 <br><br>
-The distance between $C$ and the primary body is equal to the length of the semimajor axis $a$ multiplied by the eccentricity $|e|$.
+The distance between $C$ and the primary body is equal to the length of the semimajor axis $a$ multiplied by the eccentricity $\left|e\right|$.
 <br>The direction of $C$ from the primary body is equal to the direction of the eccentricity vector $e$, which points from the  apoapsis to periapsis.
 <br>Therefore, the coordinates of $C$ are identified by multiplying the eccentricity vector $e$ by the length of the semimajor axis $a$ and adding the value of these coordinates to the coordinates of the primary body.
 
