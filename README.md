@@ -1,95 +1,98 @@
+# Orbital Simulator built in p5.js
 
-[Orbital simulator built in p5.js](https://wlldxn.github.io/Gravity_p5JS/)
-==============
-
+## Overview
+An interactive orbital physics simulator that models gravitational forces between celestial bodies.
 
 
 ## Simulating Gravity
+<p>
+
+The gravitational force between two bodies is calculated using Newton's law of universal gravitation:
+
 $F = G\frac{m_1m_2}{r^2}$
-<br><br><br>
-$F$ - Gravitational force
 
-$G$ - Gravitational constant (using 0.1 in this simulation)
+Where:
+- $F$ = Gravitational force
+- $G$ = Gravitational constant (0.1 in this simulation)
+- $m_1$ = Mass of body 1
+- $m_2$ = Mass of body 2
+- $r$ = Distance between center of masses
 
-$m_1$ - Mass of body 1
-
-$m_2$ - Mass of body 2
-
-$r$ - Distance between center of masses
-
----
-
-## Drawing orbits
-
-Drawing elliptical orbits requires 4 parameters
-
-$C$ - Orbital center
-
-$a$ - Length of semimajor axis
-
-$b$ - Length of semiminor axis
-
-$e$ - Eccentricity vector
-<br><br>
+</p>
 
 
+## Drawing Orbits
+<p>
 
-$a  = -\frac{\mu \left|r\right|}{\left|r\right|\left|v\right|^2-2\mu} $
+Elliptical orbits are defined by four key parameters:
+- $C$ - Orbital center
+- $a$ - Length of semimajor axis
+- $b$ - Length of semiminor axis
+- $e$ - Eccentricity vector
+
+### Orbital Parameters
+The following equations determine the orbital characteristics:
+
+$a  = -\frac{\mu \left|r\right|}{\left|r\right|\left|v\right|^2-2\mu}$
 
 $b = a\sqrt{1-\left|e\right|^2}$
 
 $e=\frac{r\times v}{\mu}-\frac{r}{\left|r\right|}$
 
 $\mu = G(m_1+m_2)$
-<br><br><br>
-$r$ - position vector
 
-$v$ - velocity vector
+Where:
+- $r$ = position vector
+- $v$ = velocity vector
+- $\mu$ = Standard gravitational parameter
+- $G$ = Gravitational constant (0.1 in this simulation)
+- $m_1$ = Mass of body 1
+- $m_2$ = Mass of body 2
 
-$\mu$ - Standard gravitational parameter
-
-$G$ - Gravitational constant (using 0.1 in this simulation)
-
-$m_1$ - Mass of body 1
-
-$m_2$ - Mass of body 2
-
-<br><br>
-The distance between $C$ and the primary body is equal to the length of the semimajor axis $a$ multiplied by the eccentricity $\left|e\right|$.
-<br>The direction of $C$ from the primary body is equal to the direction of the eccentricity vector $e$, which points from the  apoapsis to periapsis.
-<br>Therefore, the coordinates of $C$ are identified by multiplying the eccentricity vector $e$ by the length of the semimajor axis $a$ and adding the value of these coordinates to the coordinates of the primary body.
+### Orbital Center Calculation
+The orbital center $C$ is determined by:
+- Distance from primary body = semimajor axis $a$ × eccentricity $\left|e\right|$
+- Direction = eccentricity vector $e$ (points from apoapsis to periapsis)
 
 $(C_x,C_y) = ea + (P_x,P_y)$
 
-$(P_x,P_y)$ - Primary body coordinates
+Where $(P_x,P_y)$ are the primary body coordinates
 
-<br>
+The orbital ellipse is drawn around point $(C_x,C_y)$ with length $a$ and width $b$, rotated according to the direction of $e$.
 
-The orbital ellipse can therefore be drawn around point $(C_x,C_y)$ with length $a$ and width $b$. 
-<br>The rotation of the ellipse is equal to the direction of the eccentricity vector $e$, both with respect to the horizontal axis.
+</p>
 
----
 
-## Calculating initial velocity
 
-Initial orbital velocity is calculated by assuming that the eccentricity of an orbit is 0, i.e. that the orbit is circular.
+## Initial Velocity Calculation
+<p>
+
+For new satellites, initial orbital velocity assumes circular orbits (eccentricity = 0):
 
 $v = \sqrt{\frac{\mu}{a}}$
 
-$v$ - Orbital velocity
+Where:
+- $v$ = Orbital velocity
+- $\mu$ = Standard gravitation parameter
+- $a$ = Length of semimajor axis (distance between primary body and satellite)
 
-$\mu$ - Standard  gravitation parameter
+The velocity vector is applied by:
+1. Finding the normalized vector between primary body & satellite
+2. Rotating it by $\frac{\pi}{2}$
+3. Multiplying by orbital velocity $v$
 
-$a$ - length of semimajor axis (equal to distance between primary body and satellite)
+Note: Default satellites have modified eccentricities, while new satellites start with circular orbits.
 
-<br>To apply this velocity to the velocity vector of a satelite, find the vector distance between the primary body & satelite, normalize this, then rotate it by a factor of $\frac{\pi}{2}$ and multiply by the Orbital velocity $v$. This ensures that the satellite will travel at a perpendicular direction to the primary body.
-
-<br>Note: the default satellites in the system have altered eccentricities, but any additional satellites created will begin with circular orbits. 
+</p>
 
 
----
-## Additional points
-- The orbits drawn by this simulation constanty change, even when being used to show a single body orbiting the primary body. This is because of the discrepancy between the simple simulation of gravitational forces acting on each body by every other body and calculating the orbital ellipse as a keplar orbit.
 
-- Gravitational forces acting on the primary body $\textit{are}$ being calculated, it is just moved back to the center of the canvas so that it remains visible at all times
+## Notes
+<p>
+
+- Orbital paths continuously update due to differences between gravitational force simulation and Kepler orbit calculations
+- The primary body experiences gravitational forces but is repositioned to the canvas center for visibility
+- All bodies in the system affect each other through gravitational interactions
+
+</p>
 
