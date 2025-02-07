@@ -1,124 +1,181 @@
 let planetoids = [];
-let correctDrift = true;
-let temp = 0
-function setup() {
-  
-  createCanvas(600, 600);
-  
-  planetoids.push(new Planetoid(6000,0,0,0,0,50,'yellow'));
-  // planetoids[0].addSatelite(500,0,25,'green')
-  planetoids[0].addSatelite(500,250,25,'green',rev=true,x=-200,y=-150);
-  // planetoids[0].addSatelite(400,50,15,'blue',rev=true);
-}
+const GRAVITY = 0.1;
 
+function setup() {
+  frameRate(90);
+  createCanvas(600, 600);
+  planetoids.push(new Planetoid(8000, 0, 0, 0, 0, 50, "yellow"));
+  planetoids[0].addSatellite(100, 20, "green", 0, -250, 1);
+  planetoids[0].addSatellite(100, 20, "blue", 200, 0, 0.66);
+  planetoids[0].addSatellite(100, 20, "red", 0, 100, 1.13);
+}
 
 function draw() {
   background(220);
-translate(300,300);
-  
-  for (let j = 0; j < planetoids.length; j++){
-        if (j!==0){
+  translate(width / 2, height / 2);
+  for (let j = 0; j < planetoids.length; j++) {
+    planetoids[j].applyGravity();
+    planetoids[j].update();
     planetoids[j].drawOrbit();
+    planetoids[j].display();
+    if (j == 0) {
+      planetoids[0].position.sub(planetoids[0].position);
     }
-      planetoids[j].applyGravity();
   }
-    for (let j = 0; j < planetoids.length; j++){
-      planetoids[j].update();
-  }
-  for (let j = 0; j < planetoids.length; j++){
-    if (correctDrift){
-    let drift = p5.Vector.sub(planetoids[0].position,     createVector(0,0))
-    planetoids[j].position.sub(drift);
-    }
-      planetoids[j].display();
-
-  }
-  temp+=1
-  if (temp==2){
-    // pause
-  }
-  
-  
-  
 }
+
+/**
+ * Generates a random integer between min (inclusive) and max (exclusive).
+ * @param {number} min - The minimum value.
+ * @param {number} max - The maximum value.
+ * @returns {number} A random integer between min and max.
+ */
 function getRandomInt(min, max) {
   const minCeiled = Math.ceil(min);
   const maxFloored = Math.floor(max);
-  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
+  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
 }
 
+/**
+ * Creates a new satellite around the first planetoid when the mouse is pressed.
+ * The satellite's mass, size, and color are randomly generated, and its initial
+ * position is based on the mouse coordinates.
+ */
 function mousePressed() {
-   let colour = color(getRandomInt(0,255), getRandomInt(0,255), getRandomInt(0,255)); planetoids[0].addSatelite(getRandomInt(25,500),null,getRandomInt(10,30),colour,rev=true, x=mouseX-300, y=mouseY-300);
-  
-}
-function Planetoid(m, x, y, vx, vy, s, c) {
-  this.mass = m;
-  this.position = createVector(x, y);
-  this.velocity = createVector(vx, vy);
-  this.acceleration = createVector(0, 0);
-  this.size = s;
-  this.colour = c;
-}
-
-Planetoid.prototype.drawOrbit = function(){
-  stroke(0);
-  strokeWeight(2);
-  fill(color(0,0,0,0));
-  let v = this.velocity
-  let r = this.position
-  let u = 0.1*planetoids[0].mass
-  let h = p5.Vector.cross(r,v)
-  let vh = p5.Vector.cross(v,h)
-  let magr = p5.Vector.mag(r)
-  let magv = p5.Vector.mag(v)
-  let e = p5.Vector.div(vh,u).sub(p5.Vector.div(r,magr))
-  let mage = p5.Vector.mag(e)
-  let a = -(u*magr)/(magr*Math.pow(magv,2)-2*u)
-  let b = a*(Math.sqrt(1-Math.pow(mage,2)))
-
-  push()
-
-  let vec = createVector(planetoids[0].position.x,planetoids[0].position.y)
-  vec.add(e).normalize().mult(mage*a).rotate(PI)
-  translate(vec.x,vec.y)
-rotate(e.heading())
-  
-  ellipse(0,0,a*2,b*2)
-  pop()
-};
-
-Planetoid.prototype.addSatelite = function(m, d, s,c,rev=false, x=null, y=null){  
-  let newx = (x==null) ? this.position.x : x;
-  let newy = (y==null) ? this.position.y-d : y;
-  let satelite = new Planetoid(m, newx, newy, 0, 0, s,c)
-  let velocity = 0.66*Math.sqrt(this.mass/p5.Vector.dist(satelite.position, this.position)/10);
-  velocity = (Math.random()<0.5)?velocity:-velocity;  
-  vect = createVector(-(newy),newx);
-  vect.normalize();
-  vect.mult(velocity)
-  satelite.acceleration = vect;    
-  
-  planetoids.push(satelite)
+  const newSatelliteMass = getRandomInt(25, 500);
+  const newSatelliteSize = map(newSatelliteMass, 25, 500, 10, 40);
+  const newSatelliteColor = color(random(255), random(255), random(255));
+  const newSatelliteX = mouseX - width / 2;
+  const newSatelliteY = mouseY - height / 2;
+  planetoids[0].addSatellite(
+    newSatelliteMass,
+    newSatelliteSize,
+    newSatelliteColor,
+    newSatelliteX,
+    newSatelliteY
+  );
 }
 
-Planetoid.prototype.applyGravity = function () {
-    for (let i = 0; i < planetoids.length; i++){
-      if (i!==planetoids.indexOf(this)){
-      let distance = p5.Vector.sub(this.position,planetoids[i].position)
-      let unitVector = -0.1*((this.mass * planetoids[i].mass)/(Math.pow(distance.mag(),3)));
-        let g = p5.Vector.mult(distance, unitVector/this.mass);        
-        this.acceleration.add(g);
+/**
+ * Represents a planetoid or satellite in the simulation.
+ */
+class Planetoid {
+  /**
+   * Creates a new Planetoid object.
+   * @param {number} mass - The mass of the planetoid.
+   * @param {number} x - The initial x-coordinate.
+   * @param {number} y - The initial y-coordinate.
+   * @param {number} vx - The initial x-velocity.
+   * @param {number} vy - The initial y-velocity.
+   * @param {number} size - The size of the planetoid (diameter).
+   * @param {string} color - The color of the planetoid.
+   * @param {Planetoid} [parent=null] - The parent planetoid, if this is a satellite.
+   */
+  constructor(mass, x, y, vx, vy, size, color, parent = null) {
+    this.mass = mass;
+    this.position = createVector(x, y);
+    this.velocity = createVector(vx, vy);
+    this.acceleration = createVector(0, 0);
+    this.size = size;
+    this.colour = color;
+    this.parent = parent;
+  }
+
+  /**
+   * Draws the orbital path of the planetoid if it has a parent.
+   */
+  drawOrbit() {
+    if (!this.parent) {
+      return;
+    }
+
+    const u = GRAVITY * this.parent.mass;
+    const v = this.velocity;
+    const r = this.position;
+    const h = p5.Vector.cross(r, v);
+    const vh = p5.Vector.cross(v, h);
+    const rMag = p5.Vector.mag(r);
+    const vMag = p5.Vector.mag(v);
+    const eccentricityVector = p5.Vector.div(vh, u).sub(p5.Vector.normalize(r));
+    const eccentricity = p5.Vector.mag(eccentricityVector);
+    const a = -(u * rMag) / (rMag * Math.pow(vMag, 2) - 2 * u);
+    const b = a * Math.sqrt(1 - Math.pow(eccentricity, 2));
+    push();
+    const centerToFocus = p5.Vector.mult(eccentricityVector, a).rotate(PI);
+    translate(
+      this.parent.position.x + centerToFocus.x,
+      this.parent.position.y + centerToFocus.y
+    );
+    rotate(eccentricityVector.heading());
+    stroke(0);
+    strokeWeight(2);
+    fill(color(0, 0, 0, 0));
+    ellipse(0, 0, a * 2, b * 2);
+    pop();
+  }
+
+  /**
+   * Adds a new satellite to this planetoid.
+   * @param {number} mass - The mass of the satellite.
+   * @param {number} size - The size of the satellite.
+   * @param {string} color - The color of the satellite.
+   * @param {number} x - The initial x-coordinate of the satellite.
+   * @param {number} y - The initial y-coordinate of the satellite.
+   * @param {number} [e=1] - Modifies the force applied to the velocity magnitude.
+   */
+  addSatellite(mass, size, color, x, y, e = 1) {
+    const satellitePos = createVector(x, y);
+    const distanceToParent = p5.Vector.dist(satellitePos, this.position);
+    const velocityMagnitude =
+      e * Math.sqrt((this.mass * GRAVITY) / distanceToParent);
+    const velocitySign = Math.random() < 0.5 ? 1 : -1;
+    const velocityVector = p5.Vector.sub(satellitePos, this.position)
+      .rotate(HALF_PI * velocitySign)
+      .setMag(velocityMagnitude);
+    const satellite = new Planetoid(
+      mass,
+      x,
+      y,
+      velocityVector.x,
+      velocityVector.y,
+      size,
+      color,
+      this
+    );
+    planetoids.push(satellite);
+  }
+
+  /**
+   * Calculates and applies gravitational forces from all other planetoids.
+   */
+  applyGravity() {
+    for (const other of planetoids) {
+      if (other !== this) {
+        const distance = p5.Vector.sub(other.position, this.position);
+        const rSquared = distance.magSq();
+        const force = (GRAVITY * this.mass * other.mass) / rSquared;
+        distance.setMag(force / this.mass);
+        this.acceleration.add(distance);
       }
     }
+  }
+
+  /**
+   * Draws the planetoid as a circle on the canvas.
+   */
+  display() {
+    stroke(0);
+    strokeWeight(2);
+    fill(this.colour);
+    ellipse(this.position.x, this.position.y, this.size, this.size);
+  }
+
+  /**
+   * Updates the planetoid's position and velocity based on its acceleration.
+   */
+  update() {
+    this.velocity.add(this.acceleration);
+    this.position.add(this.velocity);
+    this.acceleration.mult(0);
+  }
 }
-Planetoid.prototype.display = function() {
-  stroke(0);
-  strokeWeight(2);
-  fill(this.colour);
-  ellipse(this.position.x, this.position.y, this.size, this.size);
-};
-Planetoid.prototype.update = function() {
-  this.velocity.add(this.acceleration);
-  this.position.add(this.velocity);
-  this.acceleration.mult(0);
-};
