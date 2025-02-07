@@ -1,18 +1,39 @@
+/**
+ * @typedef {Object} Planetoid
+ * @property {number} mass - Mass of the planetoid
+ * @property {p5.Vector} position - Current position vector
+ * @property {p5.Vector} velocity - Current velocity vector
+ * @property {p5.Vector} acceleration - Current acceleration vector
+ */
+
+/** @type {Planetoid[]} - Array containing all celestial bodies in the simulation */
 let bodies = [];
+
+/** @constant {number} - Gravitational constant for the simulation */
 const GRAVITY = 0.1;
 
+/**
+ * Initializes the simulation environment and creates the initial celestial bodies.
+ * Sets up the canvas, creates a central star, and adds initial satellites.
+ */
 function setup() {
   frameRate(90);
   createCanvas(windowWidth, windowHeight);
+  // Create central star
   bodies.push(
     new Planetoid(getRandomInt(5000, 20000), 0, 0, 0, 0, 50, "yellow")
   );
 
+  // Add initial satellites with different orbital characteristics
   bodies[0].addSatellite(100, 20, "green", generateRandomCoordinates(100), 1);
   bodies[0].addSatellite(100, 20, "blue", generateRandomCoordinates(100), 0.66);
   bodies[0].addSatellite(100, 20, "red", generateRandomCoordinates(100), 0.77);
 }
 
+/**
+ * Main animation loop that updates and renders all celestial bodies.
+ * Handles gravity calculations, position updates, and drawing of orbits and bodies.
+ */
 function draw() {
   background(220);
   translate(width / 2, height / 2);
@@ -21,7 +42,7 @@ function draw() {
     body.update();
     body.drawOrbit();
     if (body === bodies[0]) {
-      body.position.set(0, 0); //Keep the central body fixed in the center
+      body.position.set(0, 0); // Keep the central body fixed in the center
     }
   }
   for (const body of bodies) {
@@ -30,12 +51,15 @@ function draw() {
 }
 
 /**
- * Generates random coordinates that are at least a minimum distance from the center.
- * Generates random coordinates within the canvas bounds, ensuring they are at least a specified minimum distance from the center.
- * @param {number} minDistance - The minimum distance from the center.
- * @returns {p5.Vector} A vector representing the random coordinates.
+ * Generates random coordinates within valid bounds for new celestial bodies.
+ * @param {number} minDistance - Minimum distance from the center point
+ * @returns {p5.Vector} A vector containing valid random coordinates
+ * @throws {Error} If minDistance is greater than the smaller canvas dimension
  */
 function generateRandomCoordinates(minDistance) {
+  if (minDistance > min(width / 2, height / 2)) {
+    throw new Error('Minimum distance cannot be greater than canvas bounds');
+  }
   let x, y, distance;
   do {
     x = getRandomInt(-width / 2, width / 2);
@@ -46,21 +70,24 @@ function generateRandomCoordinates(minDistance) {
 }
 
 /**
- * Generates a random integer between min (inclusive) and max (exclusive).
- * @param {number} min - The minimum value.
- * @param {number} max - The maximum value.
- * @returns {number} A random integer between min and max.
+ * Generates a random integer within a specified range.
+ * @param {number} min - The inclusive lower bound
+ * @param {number} max - The exclusive upper bound
+ * @returns {number} A random integer between min (inclusive) and max (exclusive)
+ * @throws {Error} If min is greater than max
  */
 function getRandomInt(min, max) {
+  if (min > max) {
+    throw new Error('Minimum value cannot be greater than maximum value');
+  }
   const minCeiled = Math.ceil(min);
   const maxFloored = Math.floor(max);
   return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
 }
 
 /**
- * Creates a new satellite around the first planetoid when the mouse is pressed.
- * The satellite's mass, size, and color are randomly generated, and its initial
- * position is based on the mouse coordinates.
+ * Event handler for mouse clicks that creates new satellites.
+ * Creates a satellite with random properties at the mouse position.
  */
 function mousePressed() {
   const newSatelliteMass = getRandomInt(25, 500);
@@ -77,21 +104,26 @@ function mousePressed() {
 }
 
 /**
- * Represents a planetoid or satellite in the simulation.
+ * Class representing a celestial body in the gravitational simulation.
+ * Handles physics calculations, orbital mechanics, and rendering.
  */
 class Planetoid {
   /**
-   * Creates a new Planetoid object.
-   * @param {number} mass - The mass of the planetoid.
-   * @param {number} x - The initial x-coordinate.
-   * @param {number} y - The initial y-coordinate.
-   * @param {number} vx - The initial x-velocity.
-   * @param {number} vy - The initial y-velocity.
-   * @param {number} size - The size of the planetoid (diameter).
-   * @param {string} color - The color of the planetoid.
-   * @param {Planetoid} [parent=null] - The parent planetoid, if this is a satellite.
+   * Creates a new Planetoid instance.
+   * @param {number} mass - Mass of the planetoid
+   * @param {number} x - Initial x-coordinate
+   * @param {number} y - Initial y-coordinate
+   * @param {number} vx - Initial x-velocity
+   * @param {number} vy - Initial y-velocity
+   * @param {number} size - Diameter of the planetoid
+   * @param {string|p5.Color} color - Color of the planetoid
+   * @param {Planetoid} [parent=null] - Parent body (null for primary bodies)
+   * @throws {Error} If mass is negative or zero
    */
   constructor(mass, x, y, vx, vy, size, color, parent = null) {
+    if (mass <= 0) {
+      throw new Error('Mass must be positive');
+    }
     this.mass = mass;
     this.position = createVector(x, y);
     this.velocity = createVector(vx, vy);
@@ -99,6 +131,9 @@ class Planetoid {
     this.size = size;
     this.colour = color;
     this.parent = parent;
+    this.u = this.parent
+      ? GRAVITY * (this.parent.mass + this.mass)
+      : GRAVITY * this.mass;
     this.calculateOrbitalParameters();
   }
 
@@ -132,31 +167,31 @@ class Planetoid {
    */
   calculateOrbitalParameters() {
     if (this.parent) {
-      const u = GRAVITY * (this.parent.mass + this.mass); // Standard Gravitational Parameter
       const vh = p5.Vector.cross(
         this.velocity,
         p5.Vector.cross(this.position, this.velocity)
       ); //Cross product of (Specific angular momentum vector, velocity vector)
-      this.eccentricityVector = p5.Vector.div(vh, u).sub(
+      this.eccentricityVector = p5.Vector.div(vh, this.u).sub(
         p5.Vector.normalize(this.position)
       );
       const eccentricity = p5.Vector.mag(this.eccentricityVector);
-      this.semimajorAxis = -(u * this.position.mag()) /
+      this.semimajorAxis =
+        -(this.u * this.position.mag()) /
         (this.position.mag() *
           (p5.Vector.mag(this.velocity) * p5.Vector.mag(this.velocity)) -
-          2 * u);
+          2 * this.u);
       this.semiminorAxis =
         this.semimajorAxis * Math.sqrt(1 - eccentricity * eccentricity);
     }
   }
 
   /**
-   * Adds a new satellite to this planetoid.
-   * @param {number} mass - The mass of the satellite.
-   * @param {number} size - The size of the satellite.
-   * @param {string} color - The color of the satellite.
-   * @param {p5.Vector} satellitePos - The initial coordinates of the satellite.
-   * @param {number} [e=1] - Modifies the force applied to the velocity magnitude.
+   * Adds a satellite orbiting this planetoid.
+   * @param {number} mass - Mass of the satellite
+   * @param {number} size - Visual size of the satellite
+   * @param {string|p5.Color} color - Color of the satellite
+   * @param {p5.Vector} satellitePos - Initial position vector
+   * @param {number} [e=1] - Orbital eccentricity modifier (1 for circular orbit)
    */
   addSatellite(mass, size, color, satellitePos, e = 1) {
     const distanceToParent = p5.Vector.dist(satellitePos, this.position);
