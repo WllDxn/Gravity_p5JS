@@ -1,7 +1,9 @@
-# Orbital Simulator built in p5.js
+# [Orbital simulator built in p5.js](https://wlldxn.github.io/Gravity_p5JS/)
 
 ## Overview
 An interactive orbital physics simulator that models gravitational forces between celestial bodies.
+
+Click anywhere on canvas to add a body orbiting the primary body.
 
 
 ## Simulating Gravity
