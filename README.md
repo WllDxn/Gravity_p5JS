@@ -31,7 +31,7 @@ $e$ - Eccentricity vector
 <br><br>
 
 
-$\newcommand{\abs}[1]{\lvert#1\rvert}$
+$$\newcommand{\abs}[1]{\lvert#1\rvert}$$
 $a  = -\frac{\mu \abs{r}}{\abs{r}\abs{v}^2-2\mu} $
 
 $b = a\sqrt{1-\abs{e}^2}$
