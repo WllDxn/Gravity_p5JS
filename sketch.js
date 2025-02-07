@@ -3,7 +3,7 @@ const GRAVITY = 0.1;
 
 function setup() {
   frameRate(90);
-  createCanvas(600, 600);
+  createCanvas(windowWidth, windowHeight);
   planetoids.push(new Planetoid(8000, 0, 0, 0, 0, 50, "yellow"));
   planetoids[0].addSatellite(100, 20, "green", 0, -250, 1);
   planetoids[0].addSatellite(100, 20, "blue", 200, 0, 0.66);
@@ -107,7 +107,7 @@ class Planetoid {
       this.parent.position.y + centerToFocus.y
     );
     rotate(eccentricityVector.heading());
-    stroke(0);
+    stroke(this.colour);
     strokeWeight(2);
     fill(color(0, 0, 0, 0));
     ellipse(0, 0, a * 2, b * 2);
