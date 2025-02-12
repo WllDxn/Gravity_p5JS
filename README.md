@@ -69,21 +69,16 @@ The orbital ellipse is drawn around point $(C_x,C_y)$ with length $a$ and width 
 ## Initial Velocity Calculation
 <p>
 
-For new satellites, initial orbital velocity assumes circular orbits (eccentricity = 0):
-
-$v = \sqrt{\frac{\mu}{a}}$
+$v = \sqrt{\mu(\frac{2}{r}-\frac{1}{a})}$
 
 Where:
 - $v$ = Orbital velocity
 - $\mu$ = Standard gravitation parameter
+- $r$ = Distance between bodies 
 - $a$ = Length of semimajor axis (distance between primary body and satellite)
 
-The velocity vector is applied by:
-1. Finding the normalized vector between primary body & satellite
-2. Rotating it by $\frac{\pi}{2}$
-3. Multiplying by orbital velocity $v$
+The velocity is applied in the direction perpendicular to the vector heading from the satellite to the primary body.
 
-Note: Default satellites have modified eccentricities, while new satellites start with circular orbits.
 
 </p>
 
@@ -92,8 +87,8 @@ Note: Default satellites have modified eccentricities, while new satellites star
 ## Notes
 <p>
 
-- Orbital paths continuously update due to differences between gravitational force simulation and Kepler orbit calculations
-- The primary body experiences gravitational forces but is repositioned to the canvas center for visibility
+- Orbital paths continuously update due to differences between gravitational force simulation and Kepler orbit calculations. Due to the nature of this being an N-body system, it is not possible to accurately predict orbits and as such orbital ellipses should be taken as estimations only.
+- The primary body is kept static in the center of the canvas to ensure visibility.
 - All bodies in the system affect each other through gravitational interactions
 
 </p>
