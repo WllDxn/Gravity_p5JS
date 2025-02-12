@@ -49,7 +49,16 @@ const SATELLITE_CONFIGS = [
     },
     eccentricityModifier: 1,
     parentIndex: 1
-  }
+  },  {
+    mass: 100,
+    size: 10,
+    color: 'blue',
+    distance: {
+      min: 100,
+      max: 200
+    },
+    eccentricityModifier: 0.6
+  },
 ]
 
 /**
