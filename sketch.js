@@ -1,3 +1,4 @@
+
 /**
  * @typedef {Object} CelestialBody
  * @property {number} mass - Mass of the celestial body
@@ -15,7 +16,11 @@
  * @property {number} semiminorAxis - Length of the semi-minor axis of the orbit
  */
 
-/** @type {CelestialBody[]} */
+/**
+ * Array to store celestial bodies.
+ * This array holds all the celestial bodies in the simulation.
+ * @type {CelestialBody[]}
+ */
 let bodies = [];
 
 /**
@@ -25,7 +30,8 @@ let bodies = [];
 const GRAVITY = 0.1;
 
 /**
- * @constant {Object[]} Configuration for initial satellite bodies
+ * @constant {Object[]} SATELLITE_CONFIGS
+ * @description Configuration for initial satellite bodies
  * @property {number} mass - Mass of the satellite
  * @property {number} size - Visual size of the satellite
  * @property {string} color - Color of the satellite
@@ -70,7 +76,8 @@ const SATELLITE_CONFIGS = [
 ];
 
 /**
- * @constant {Object} Configuration for the central star
+ * @constant {Object} CENTRAL_STAR_CONFIG
+ * @description Configuration for the central star
  * @property {number} mass - Mass of the central star
  * @property {number} size - Visual size of the central star
  * @property {string} color - Color of the central star
@@ -89,13 +96,17 @@ const CENTRAL_STAR_CONFIG = {
   velocity: { x: 0, y: 0 },
 };
 
-/** @type {HTMLElement} */
-let menuButton;
-
-/** @type {boolean} */
+/** 
+ * @type {boolean} 
+ * @description Flag to track if the mouse is hovering over the menu
+ * @default false
+*/
 let menuHover = false;
 
-/** @type {HTMLElement} */
+/**
+ *  @type {HTMLElement} 
+ * @description menu object
+*/
 let menu;
 
 /**
@@ -125,6 +136,7 @@ const centerY = () => height / 2;
 /**
  * Initializes the simulation environment and creates initial celestial bodies
  * @function
+ * @name setup
  * @returns {void}
  */
 function setup() {
@@ -162,8 +174,10 @@ function setup() {
 }
 
 /**
- * Handles input changes in the menu
+ * @function inputHandler
+ * @description Handles input changes in the menu
  * @param {Event} e - Input event object
+ * @returns {void}
  */
 const inputHandler = function (e) {
   const config = {
@@ -206,7 +220,7 @@ const inputHandler = function (e) {
 
 /**
  * Creates and configures the configuration menu interface
- * @function
+ * @function createMenu
  * @description Sets up a menu with configuration options for the central star and new satellites.
  * Creates input fields for mass, color, size, and other orbital parameters.
  * Initializes the menu button, menu container, and all input handlers.
@@ -215,11 +229,9 @@ const inputHandler = function (e) {
  * - New planet configuration (mass range, size, color, eccentricity)
  * - Clear button to remove all satellites
  * @returns {void}
- * @example
- * createMenu();
  */
 function createMenu() {
-  menuButton = createButton("config")
+  let menuButton = createButton("config")
     .style("z-index", 2)
     .position(0, 2)
     .mouseClicked(openMenu);
@@ -338,7 +350,10 @@ function createMenu() {
 }
 
 /**
- * Handles window resize events
+ * @function 
+ * @name windowResized
+ * @description Handles window resize events and redraws the canvas
+ * @returns {void}
  */
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
@@ -347,6 +362,8 @@ function windowResized() {
 
 /**
  * Creates a menu row with label and input element
+ * @function
+ * @name createMenuRow
  * @param {string} labelText - Text for the label
  * @param {p5.Element} inputElement - Input element to add
  * @param {string} inputId - ID for the input element
@@ -377,7 +394,11 @@ function createMenuRow(labelText, inputElement, inputId) {
 }
 
 /**
- * Toggles the visibility of the configuration menu
+ * Toggles the visibility of the configuration menu.
+ * If the menu is currently visible, it will be hidden; otherwise, it will become visible.
+ * @function
+ * @name openMenu
+ * @returns {void}
  */
 function openMenu() {
   menu.style(
@@ -388,7 +409,7 @@ function openMenu() {
 
 /**
  * Main animation loop that updates and renders all celestial bodies
- * @function
+ * @function draw
  * @returns {void}
  */
 function draw() {
@@ -412,8 +433,9 @@ function draw() {
 }
 
 /**
- * Generates random coordinates within valid bounds for new celestial bodies
+ * Generates random coordinates within valid bounds for new celestial bodies.
  * @function
+ * @name generateRandomCoordinates
  * @param {CelestialBody} parent - The parent celestial body
  * @param {number} [minDistance=0] - Minimum distance from the center point
  * @param {number} [maxDistance=null] - Maximum distance from the center point
@@ -444,6 +466,7 @@ function generateRandomCoordinates(
 /**
  * Generates a random integer within a specified range
  * @function
+ * @name getRandomInt
  * @param {number} min - The inclusive lower bound
  * @param {number} max - The exclusive upper bound
  * @returns {number} A random integer between min (inclusive) and max (exclusive)
@@ -456,7 +479,9 @@ function getRandomInt(min, max) {
 }
 
 /**
- * Event handler for mouse clicks
+ * @function
+ * @name mouseClicked
+ * @description Handles mouse click events and adds a new satellite if the click is not on the menu
  * @returns {number} Returns 0 if click is on menu, undefined otherwise
  */
 function mouseClicked() {
@@ -495,13 +520,14 @@ function mouseClicked() {
 }
 
 /**
- * Class representing a celestial body in the gravitational simulation
- * @class
- */
+ @module CelestialBody
+*/
 class CelestialBody {
   /**
-   * Creates a new CelestialBody instance
-   * @constructor
+ * Class representing a celestial body in the gravitational simulation.
+ * This class handles the physics and rendering of a celestial body, including its position, velocity, acceleration, and orbital parameters.
+   * @constructor 
+   * @name CelestialBody
    * @param {number} mass - Mass of the celestial body
    * @param {number} x - Initial x-coordinate
    * @param {number} y - Initial y-coordinate
@@ -526,6 +552,13 @@ class CelestialBody {
     this.calculateOrbitalParameters();
     this.timeOut = 100;
   }
+  /**
+   * Calculates the standard gravitational parameter of the body.
+   * The parameter represents the product of the gravitational constant and the mass of the body (or system).
+   * @method
+   * @name gravitationalParameter
+   * @returns {number} The standard gravitational parameter.
+   */
   get gravitationalParameter() {
     return this.parent
       ? GRAVITY * (this.parent.mass + this.mass)
@@ -535,6 +568,7 @@ class CelestialBody {
   /**
    * Draws the orbital path of the celestial body
    * @method
+   * @name drawOrbit
    * @returns {void}
    */
   drawOrbit() {
@@ -562,7 +596,8 @@ class CelestialBody {
 
   /**
    * Calculates the orbital parameters of the celestial body
-   * @method
+   * @method 
+   * @name calculateOrbitalParameters
    * @returns {number} The orbital eccentricity
    */
   calculateOrbitalParameters() {
@@ -592,11 +627,12 @@ class CelestialBody {
   /**
    * Adds a satellite orbiting this celestial body
    * @method
+   * @name addSatellite
    * @param {number} mass - Mass of the satellite
    * @param {number} size - Visual size of the satellite
    * @param {string|p5.Color} color - Color of the satellite
    * @param {p5.Vector} satellitePos - Initial position vector relative to parent
-   * @param {number} [eccentricity=1] - Orbital eccentricity modifier
+   * @param {number} [eccentricity=0] - Orbital eccentricity modifier
    * @returns {void}
    */
   addSatellite(mass, size, color, satellitePos, eccentricity = 0) {
@@ -623,8 +659,9 @@ class CelestialBody {
   }
 
   /**
-   * Calculates and applies gravitational forces
    * @method
+   * @name applyGravity
+   * @description Applies gravitational forces to this celestial body from all other bodies
    * @returns {void}
    */
   applyGravity() {
@@ -644,6 +681,7 @@ class CelestialBody {
   /**
    * Draws the celestial body
    * @method
+   * @name display
    * @returns {void}
    */
   display() {
@@ -656,21 +694,23 @@ class CelestialBody {
   /**
    * Updates position and velocity based on acceleration
    * @method
+   * @name update
    * @returns {void}
    */
   update() {
     this.velocity.add(this.acceleration);
     this.position.add(this.velocity);
     const e = this.calculateOrbitalParameters();
-    if (e > 1 && this.parent) {
+    if (this.parent) {
       this.checkOtherBodies(e);
       this.checkOrbitAndRemove();
     }
   }
 
   /**
-   * Checks if body should be removed from simulation
    * @method
+   * @name checkOrbitAndRemove
+   * @description Checks if the body is still orbiting its parent and removes it if not, includes timeout to remove object from simulation if off screen for too long
    * @returns {void}
    */
   checkOrbitAndRemove() {
@@ -691,8 +731,9 @@ class CelestialBody {
   /**
    * Checks for better orbital configurations with other bodies
    * @method
+   * @name checkOtherBodies
    * @param {number} eccentricity - Current orbital eccentricity
-   * @returns {number} The lowest achievable eccentricity
+   * @returns {void}
    */
   checkOtherBodies(eccentricity) {
     const originalParent = bodies.indexOf(this.parent);
@@ -720,6 +761,5 @@ class CelestialBody {
       }
     }
     this.parent = lowestEccentricity < 1 ? bestParent : bodies[originalParent];
-    return lowestEccentricity;
   }
 }
