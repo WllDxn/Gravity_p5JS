@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Astro Config Toolbox</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f7fafc;
+        padding: 20px;
+      }
+      .container {
+        position: relative;
+        max-width: 600px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .color-input-container {
+        margin-left: auto;
+        margin-right: auto;
+        align-items: center;
+        display: flex;
+      }
+      h1,
+      h2 {
+        color: #2d3748;
+        text-align: center;
+        margin-top: 0px;
+      }
+
+      .color-box {
+        width: 1.5em;
+        height: 1.5em;
+        border: 1px solid #ccc;
+        cursor: pointer;
+        border-radius: 50%;
+        margin-top: auto;
+        margin-bottom: auto;
+      }
+      .slider {
+        width: 70%;
+      }
+
+      .value-text {
+        text-align: center;
+      }
+      .section-grid {
+        display: grid;
+        gap: 15px;
+        width: 100%;
+        grid-auto-rows: 1fr;
+        margin-bottom: 10px;
+      }
+      
+      .input-group {
+        display: grid;
+        grid-template-columns: 6em 2em 1fr 4em;
+        align-items: center;
+      }
+    </style>
+    <link rel="stylesheet" href="coloris.min.css" />
+    <script src="coloris.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+  </head>
+  <body>
+    <div class="container" id="config-toolbox"></div>
+
+    <script>
+      const container = document.getElementById("config-toolbox");
+
+      const createDiv = (className = "") => {
+        const div = document.createElement("div");
+        if (className) div.className = className;
+        return div;
+      };
+
+      const createLabel = (text, htmlFor) => {
+        const label = document.createElement("label");
+        label.textContent = text;
+        label.htmlFor = htmlFor;
+        
+        return label;
+      };
+
+      const createSpan = (id, text) => {
+        const span = document.createElement("span");
+        span.id = id;
+        span.textContent = text;
+        span.style.flex = "0 1 initial";
+        span.classList.add('value-text')
+        return span;
+      };
+
+      const createRangeInput = (id, min, max, value, step = "1") => {
+        const input = document.createElement("div");
+        input.id = id;
+        input.min = min;
+        input.max = max;
+        input.value = value;
+        input.step = step;
+        input.style.flex = "1 1 auto";
+        input.style.marginLeft = "1em";
+        input.style.marginRight = "1em";        
+        return input;
+      };
+
+const createColourInput = (id, value) => {
+  // Predefined color palette
+  const colorPalette = [
+    '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF',
+    '#FFA500', '#800080', '#FFC0CB', '#A52A2A', '#808080', '#FFFFFF',
+    '#000000', '#FFD700', '#4169E1', '#32CD32', '#FF6347', '#20B2AA'
+  ];
+
+  const colourBox = $('<div class="color-box">').css('background-color', value);
+  
+  const select = $('<select class="color-dropdown">')
+    .attr('id', id);
+  
+  // Add color options to dropdown
+  colorPalette.forEach((color) => {
+    const option = $('<option>')
+      .attr('value', color)
+      .text(color)
+      .css('background-color', color)
+      .css('color', color);
+    
+    select.append(option);
+  });
+  
+  // Set the current value
+  select.val(value);
+  
+  // Update color box when selection changes
+  select.on('change', function() {
+    const selectedColor = $(this).val();
+    colourBox.css('background-color', selectedColor);
+  });
+  
+  // Click color box to open dropdown
+  colourBox.on('click', () => select.click());
+  
+  const container = $('<div class="color-input-container">').append(colourBox, select);
+  
+  return container[0]; // Return the DOM element
+};
+
+// Sun Configuration
+const sunSection = createSection("Sun", true);
+container.appendChild(sunSection);
+
+const sunMassInput = createRangeInput("sun-mass", "1", "1000", "100");
+sunSection.gridContainer.appendChild(createInputGroup("Mass", sunMassInput, "100", "1", "1000"));
+
+const sunColourInput = createColourInput("sun-color", "#FFD700");
+sunSection.gridContainer.appendChild(createInputGroup("Colour", sunColourInput));
+
+const sunSizeInput = createRangeInput("sun-size");
+sunSection.gridContainer.appendChild(createInputGroup("Size", sunSizeInput, "50", "10", "100"));
+
+// Planet Configuration
+const planetSection = createSection("Planet");
+container.appendChild(planetSection);
+
+const planetMassInput = createRangeInput("planet-min-mass", "1", "10", "150");
+planetSection.gridContainer.appendChild(createInputGroup("Mass", planetMassInput, "50", "1", "150", "10"));
+
+if (false){
+    const planetSizeInput = createRangeInput("planet-size", "1", "50", "10");
+planetSection.gridContainer.appendChild(createInputGroup("Size", planetSizeInput, "10", "1", "50"));
+}
+const planetColourInput = createColourInput("planet-color", "#4682B4");
+planetSection.gridContainer.appendChild(createInputGroup("Colour", planetColourInput));
+
+const planetEccentricityInput = createRangeInput(
+  "planet-eccentricity",
+  "0",
+  "1",
+  "0.1",
+  "0.01"
+);
+planetSection.gridContainer.appendChild(
+  createInputGroup(
+    "Eccentricity",
+    planetEccentricityInput,
+    "0.1",
+    "0",
+    "1",
+    null,
+    0.01
+  )
+);
+    </script>
+  </body>
+</html>

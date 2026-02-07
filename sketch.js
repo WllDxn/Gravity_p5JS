@@ -253,7 +253,10 @@ function createMenu() {
     .style("min-width", "250px")
     .style("border", "2px solid #666666")
     .style("opacity", 0.95)
-    .style("box-shadow", "0 2px 4px rgba(0, 0, 0, 0.2)");
+    .style("box-shadow", "0 2px 4px rgba(0, 0, 0, 0.2)")
+    .attribute("class", "menu");
+
+    
 
   menu.mouseOver(() => {
     menuHover = true;
